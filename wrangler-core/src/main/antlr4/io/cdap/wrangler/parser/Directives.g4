@@ -140,7 +140,7 @@ numberRange
  ;
 
 value
- : String | Number | Column | Bool
+ : String | Number | Column | Bool | BYTE_SIZE | TIME_DURATION
  ;
 
 ecommand
@@ -256,6 +256,37 @@ Bool
 Number
  : Int ('.' Digit*)?
  ;
+
+// --- Byte Size Lexer Rules ---
+fragment BYTE_UNIT: 
+    [bB]               // Bytes
+    | [kK][bB]         // Kilobytes (KB)
+    | [mM][bB]         // Megabytes (MB)
+    | [gG][bB]         // Gigabytes (GB)
+    | [tT][bB]         // Terabytes (TB)
+;
+
+BYTE_SIZE: 
+    ([0-9]+ ('.' [0-9]*)? | '.' [0-9]+) // Positive number (no negative sign)
+    [ \t]*                                // Optional whitespace
+    BYTE_UNIT
+;
+
+// --- Time Duration Lexer Rules ---
+fragment TIME_UNIT: 
+    [nN][sS]           // Nanoseconds (ns)
+    | [mM][sS]         // Milliseconds (ms)
+    | [sS]             // Seconds (s)
+    | [mM]             // Minutes (m)
+    | [hH]             // Hours (h)
+    | [dD]             // Days (d)
+;
+
+TIME_DURATION: 
+    ([0-9]+ ('.' [0-9]*)? | '.' [0-9]+) // Positive number (no negative sign)
+    [ \t]*                                // Optional whitespace
+    TIME_UNIT
+;
 
 Identifier
  : [a-zA-Z_\-] [a-zA-Z_0-9\-]*

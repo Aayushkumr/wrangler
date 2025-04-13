@@ -38,6 +38,9 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import io.cdap.wrangler.api.parser.ByteSize;
+import io.cdap.wrangler.api.parser.TimeDuration;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -316,6 +319,45 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
     builder.addToken(new TextList(strs));
     return builder;
   }
+  /**
+   * This visitor methods extracts the list of properties specified. It creates a token
+   * type <code>Properties</code> to be added to <code>TokenGroup</code>.
+   */
+  @Override
+  public RecipeSymbol.Builder visitValue(DirectivesParser.ValueContext ctx) {
+      if (ctx.String() != null) {
+          String value = ctx.String().getText();
+          builder.addToken(new Text(value.substring(1, value.length() - 1)));
+      } else if (ctx.Number() != null) {
+          builder.addToken(new Numeric(new LazyNumber(ctx.Number().getText())));
+      } else if (ctx.Column() != null) {
+          builder.addToken(new ColumnName(ctx.Column().getText().substring(1)));
+      } else if (ctx.Bool() != null) {
+          builder.addToken(new Bool(Boolean.valueOf(ctx.Bool().getText())));
+      } else if (ctx.BYTE_SIZE() != null) {  // NEW: Handle byte size
+          builder.addToken(new ByteSize(ctx.BYTE_SIZE().getText()));
+      } else if (ctx.TIME_DURATION() != null) {  // NEW: Handle time duration
+          builder.addToken(new TimeDuration(ctx.TIME_DURATION().getText()));
+      }
+      return builder;
+  }
+
+  @Override
+  public RecipeSymbol.Builder visitTerminal(TerminalNode node) {
+      switch (node.getSymbol().getType()) {
+          case DirectivesLexer.BYTE_SIZE:
+              builder.addToken(new ByteSize(node.getText()));
+              break;
+          case DirectivesLexer.TIME_DURATION:
+              builder.addToken(new TimeDuration(node.getText()));
+              break;
+          // Existing cases remain unchanged
+          default:
+              super.visitTerminal(node);
+              break;
+      }
+      return builder;
+  }
 
   private SourceInfo getOriginalSource(ParserRuleContext ctx) {
     int a = ctx.getStart().getStartIndex();
@@ -326,4 +368,5 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
     int column = ctx.getStart().getCharPositionInLine();
     return new SourceInfo(lineno, column, text);
   }
+
 }
