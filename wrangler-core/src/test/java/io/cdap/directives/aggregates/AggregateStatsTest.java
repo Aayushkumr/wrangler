@@ -51,7 +51,11 @@ public class AggregateStatsTest {
             new Row("data_transfer_size", new ByteSize("5MB")).add("response_time", new TimeDuration("2s"))
         );
         
-        Arguments args = createArguments("data_transfer_size", "response_time", "total_size", "total_time", "MB", "seconds", "sum");
+        Arguments args = createArguments(
+            "data_transfer_size",
+            "response_time", "total_size", "total_time",
+            "MB", "seconds", "sum"
+         );
         directive.initialize(args);
         
         List<Row> results = directive.execute(rows, context);
@@ -68,11 +72,17 @@ public class AggregateStatsTest {
     @Test
     public void testAverageAggregation() throws Exception {
         List<Row> rows = Arrays.asList(
-            new Row("data_transfer_size", new ByteSize("10KB")).add("response_time", new TimeDuration("100ms")),
-            new Row("data_transfer_size", new ByteSize("5MB")).add("response_time", new TimeDuration("2s"))
+            new Row("data_transfer_size", new ByteSize("10KB"))
+            .add("response_time", new TimeDuration("100ms")),
+            new Row("data_transfer_size", new ByteSize("5MB"))
+            .add("response_time", new TimeDuration("2s"))
         );
         
-        Arguments args = createArguments("data_transfer_size", "response_time", "avg_size", "avg_time", "KB", "ms", "average");
+        Arguments args = createArguments(
+            "data_transfer_size", "response_time",
+            "avg_size", "avg_time",
+            "KB", "ms", "average"
+        );
         directive.initialize(args);
         
         List<Row> results = directive.execute(rows, context);
@@ -87,7 +97,11 @@ public class AggregateStatsTest {
     public void testEmptyRows() throws Exception {
         List<Row> rows = Arrays.asList();
         
-        Arguments args = createArguments("data_transfer_size", "response_time", "total_size", "total_time", "MB", "s", "sum");
+        Arguments args = createArguments(
+            "data_transfer_size", "response_time",
+            "total_size", "total_time",
+            "MB", "s", "sum"
+        );
         directive.initialize(args);
         
         List<Row> results = directive.execute(rows, context);
@@ -102,7 +116,11 @@ public class AggregateStatsTest {
             new Row("data_transfer_size", "NotAByteSize").add("response_time", new TimeDuration("100ms"))
         );
         
-        Arguments args = createArguments("data_transfer_size", "response_time", "total_size", "total_time", "MB", "s", "sum");
+        Arguments args = createArguments(
+            "data_transfer_size", "response_time",
+            "total_size", "total_time",
+            "MB", "s", "sum"
+        );
         directive.initialize(args);
         
         directive.execute(rows, context);

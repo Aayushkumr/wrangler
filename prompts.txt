@@ -1,0 +1,121 @@
+/*
+ *  Copyright © 2017-2019 Cask Data, Inc.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ *  use this file except in compliance with the License. You may obtain a copy of
+ *  the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ *  License for the specific language governing permissions and limitations under
+ *  the License.
+ */
+ 
+# Prompts Used for CDAP Wrangler Intern Assignment
+
+## 1. Initial Setup Prompt
+Prompt:  
+"Break down the assignment into smaller steps to complete and help me finish this assignment."
+
+Purpose:  
+Requested a step-by-step guide to approach the complex task of enhancing Wrangler with byte size and time duration parsers. The response outlined:  
+- Forking the repo  
+- Grammar modifications  
+- API updates  
+- Core parser changes  
+- Directive implementation  
+- Testing strategy  
+
+
+## 2. Code Implementation Prompts
+
+### Prompt 2.1: Directive Structure
+Prompt:  
+"How to implement an aggregate directive in CDAP Wrangler that accumulates values across rows?"
+
+Purpose:  
+Asked for guidance on the `aggregate-stats` directive structure. The response clarified:  
+- Required methods (`initialize`, `execute`, `finalize`)  
+- Usage of `TransientStore` for state management  
+- Example skeleton code  
+
+### Prompt 2.2: ANTLR Grammar
+Prompt:  
+"ANTLR4 lexer rule for time durations like '5ms' and byte sizes like '10KB'."
+
+Purpose:  
+Requested grammar rules for new tokens. The response provided:  
+
+    fragment BYTE_UNIT: [KkMmGgTt][Bb]?;
+    BYTE_SIZE: NUMBER BYTE_UNIT;
+    fragment TIME_UNIT: [Nn]?[Ss] | [Mm][Ss]? | [Hh];
+    TIME_DURATION: NUMBER TIME_UNIT;
+
+### Prompt 2.3: Unit Conversion
+Prompt:
+"How to convert 10KB to bytes in Java, adhering to 1024-based units?"
+
+Purpose:
+Sought implementation logic for ByteSize class. The response included:
+
+    public long getBytes() {
+        // Example: Parse "10KB" → 10 * 1024
+    }
+
+
+## 3. Debugging Prompts
+
+### Prompt 3.1: Compilation Errors
+Prompt:
+"Fix 'cannot find symbol' errors in AggregateStats.java related to TransientStore and missing methods."
+
+Purpose:
+Debugged compilation issues. Solutions included:
+- Adding missing imports (AggregateInterpreter)
+- Correcting UsageDefinition builder methods (optional vs defineOptional)
+- Fixing TransientStore method signatures
+
+### Prompt 3.2: Test Cases
+Prompt:
+"Write test cases for AggregateStats directive to verify byte size and time aggregation."
+
+Purpose:
+Requested test coverage. The response provided:
+
+    @Test
+    public void testAggregation() {
+        Row row1 = new Row("size", "10KB", "time", "5ms");
+        Row row2 = new Row("size", "1.5MB", "time", "2s");
+        String[] recipe = {"aggregate-stats :size :time total_size_mb total_time_sec"};
+        List<Row> results = TestingRig.execute(recipe, Arrays.asList(row1, row2));
+        Assert.assertEquals(1576.0, results.get(0).getValue("total_size_mb"), 0.1);
+    }
+
+
+## 4. Finalization Prompts
+
+### Prompt 4.1: Documentation
+Prompt:
+"How to document the new directive in README.md?"
+
+Purpose:
+Ensured usability. The response suggested:
+
+    ### Byte Size & Time Duration Parsers  
+    **Directive**: `aggregate-stats`  
+    **Usage**:  
+    `aggregate-stats :source_size :source_time :target_size :target_time [output_unit]`  
+    **Example**:  
+    `aggregate-stats :data_size :response_time :total_size_mb :total_time_sec MB seconds`  
+
+### Prompt 4.2: Build Validation
+Prompt:
+"Resolve Maven build failures due to dependency conflicts."
+
+Purpose:
+Fixed build issues by:
+- Verifying wrangler-api version in pom.xml
+- Cleaning and rebuilding with mvn clean install -DskipTests

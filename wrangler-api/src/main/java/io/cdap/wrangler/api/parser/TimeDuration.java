@@ -8,8 +8,8 @@
  * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
  */
@@ -66,7 +66,7 @@ public class TimeDuration implements Token {
       throw new IllegalArgumentException("Time duration cannot be negative: " + rawValue);
     }
     
-    switch (unit) {
+    switch (unit.toLowerCase()) {
       case "ns":
         nanoseconds = (long) number;
         break;
@@ -74,17 +74,26 @@ public class TimeDuration implements Token {
         nanoseconds = (long) (number * NANOS_PER_MILLI);
         break;
       case "s":
+      case "sec":
+      case "second":
+      case "seconds":
         nanoseconds = (long) (number * NANOS_PER_SECOND);
         break;
       case "m":
       case "min":
+      case "minute":
+      case "minutes":
         nanoseconds = (long) (number * NANOS_PER_MINUTE);
         break;
       case "h":
       case "hr":
+      case "hour":
+      case "hours":
         nanoseconds = (long) (number * NANOS_PER_HOUR);
         break;
       case "d":
+      case "day":
+      case "days":
         nanoseconds = (long) (number * NANOS_PER_DAY);
         break;
       default:

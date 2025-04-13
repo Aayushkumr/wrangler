@@ -120,8 +120,8 @@ public class TimeDurationTest {
     Assert.assertEquals(60.0, duration.to("s"), 0.001);
     Assert.assertEquals(60_000.0, duration.to("ms"), 0.001);
     Assert.assertEquals(60_000_000_000.0, duration.to("ns"), 0.001);
-    Assert.assertEquals(1/60.0, duration.to("h"), 0.0001);
-    Assert.assertEquals(1/1440.0, duration.to("d"), 0.0001);
+    Assert.assertEquals(1 / 60.0, duration.to("h"), 0.0001);
+    Assert.assertEquals(1 / 1440.0, duration.to("d"), 0.0001);
   }
   
   @Test(expected = IllegalArgumentException.class)
